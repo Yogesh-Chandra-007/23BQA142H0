@@ -1,15 +1,17 @@
+import java.time.LocalDateTime;
+
 public class Notification {
 
     private String id;
     private String type;
-    private long timestamp;
-    private boolean read;
+    private String message;
+    private LocalDateTime timestamp;
 
-    public Notification(String id, String type, long timestamp, boolean read) {
+    public Notification(String id, String type, String message, LocalDateTime timestamp) {
         this.id = id;
         this.type = type;
+        this.message = message;
         this.timestamp = timestamp;
-        this.read = read;
     }
 
     public String getId() {
@@ -20,20 +22,11 @@ public class Notification {
         return type;
     }
 
-    public long getTimestamp() {
+    public String getMessage() {
+        return message;
+    }
+
+    public LocalDateTime getTimestamp() {
         return timestamp;
-    }
-
-    public boolean isRead() {
-        return read;
-    }
-
-    @Override
-    public String toString() {
-        return "Notification{" +
-                "id='" + id + '\'' +
-                ", type='" + type + '\'' +
-                ", timestamp=" + timestamp +
-                '}';
     }
 }
