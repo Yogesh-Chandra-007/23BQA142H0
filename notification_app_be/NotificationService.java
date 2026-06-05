@@ -1,39 +1,41 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
 public class NotificationService {
 
-    private final PriorityQueue<Notification> priorityQueue;
+    private final PriorityQueue<Notification> heap;
 
     public NotificationService() {
-        priorityQueue = new PriorityQueue<>(
-                (a, b) -> Long.compare(getScore(b), getScore(a))
-        );
+
+        heap = new PriorityQueue<>((a, b) -> {
+
+            int weightA = getWeight(a.getType());
+            int weightB = getWeight(b.getType());
+
+            if (weightA != weightB) {
+                return Integer.compare(weightB, weightA);
+            }
+
+            return b.getTimestamp().compareTo(a.getTimestamp());
+        });
     }
 
-    private long getScore(Notification notification) {
+    private int getWeight(String type) {
 
-        int weight;
+        switch (type.toUpperCase()) {
 
-        switch (notification.getType().toUpperCase()) {
             case "PLACEMENT":
-                weight = 3;
-                break;
-            case "RESULT":
-                weight = 2;
-                break;
-            default:
-                weight = 1;
-        }
+                return 3;
 
-        return weight * 1_000_000_000_000L + notification.getTimestamp();
+            case "RESULT":
+                return 2;
+
+            default:
+                return 1;
+        }
     }
 
     public void addNotification(Notification notification) {
-        if (!notification.isRead()) {
-            priorityQueue.offer(notification);
-        }
+        heap.offer(notification);
     }
 
     public List<Notification> getTopNotifications(int n) {
@@ -41,14 +43,15 @@ public class NotificationService {
         List<Notification> result = new ArrayList<>();
         List<Notification> temp = new ArrayList<>();
 
-        while (n > 0 && !priorityQueue.isEmpty()) {
-            Notification current = priorityQueue.poll();
+        while (!heap.isEmpty() && n-- > 0) {
+
+            Notification current = heap.poll();
+
             result.add(current);
             temp.add(current);
-            n--;
         }
 
-        priorityQueue.addAll(temp);
+        heap.addAll(temp);
 
         return result;
     }
